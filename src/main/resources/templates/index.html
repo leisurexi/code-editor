@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
+    <link rel="stylesheet" href="../static/css/codemirror.css">
+    <style>
+        .div-shadow {
+            margin-top: 30px !important;
+            width: 800px;
+            height: 500px;
+            padding: 10px;
+        }
+
+        #code-editor {
+            width: 100% !important;
+            height: 100% !important;
+            background-color: white;
+        }
+
+        .alert-span {
+            padding: 3px !important;
+            margin-bottom: 0rem !important;
+        }
+    </style>
+</head>
+<body>
+
+<h1 style="margin-top: 10px !important;" class="text-center">Online Java Editor</h1>
+
+<div class="m-auto div-shadow shadow p-3 mb-5 bg-white rounded">
+    <div id="code-editor">
+
+    </div>
+</div>
+<div style="margin-top: 30px !important; width: 800px" class="m-auto">
+    <button id="execute-btn" type="button" class="btn btn-primary" data-toggle="collapse"
+            data-target="#results-container" aria-expanded="false"
+            aria-controls="results-container" onclick="executeCode()">执行代码
+    </button>
+    <button type="button" class="btn btn-secondary" onclick="clearCode()">清空代码</button>
+</div>
+<div style="margin-top: 10px !important; width: 800px" class="m-auto collapse" id="results-container">
+    <div class="card card-body">
+        <p>执行结果：
+            <span id="success" class="alert alert-success alert-span">成功</span>
+            <span id="fail" class="alert alert-danger alert-span">编译错误</span>
+        </p>
+        <p id="results">
+
+        </p>
+    </div>
+</div>
+
+<script src="../static/js/jquery-3.4.1.min.js"></script>
+<script src="../static/js/bootstrap.js"></script>
+<script src="../static/js/codemirror.js"></script>
+<script src="../static/model/clike.js"></script>
+<script>
+    const defaultCode = "public class Test {\n" +
+        "   public static void main(String[] arg) {\n\n" +
+        "   }\n" +
+        "}";
+    let codeMirror = CodeMirror(document.getElementById("code-editor"), {
+        value: defaultCode,
+        lineNumbers: true,
+        mode: "text/x-java"
+    });
+
+    //执行代码
+    function executeCode() {
+        $("#success").hide();
+        $("#fail").hide();
+        let value = codeMirror.getValue();
+        $.post("/execute_code", {code: value}, data => {
+            $("#execute-btn").removeAttr("data-target");
+            $("#execute-btn").removeAttr("aria-controls");
+            console.log(data);
+            if (data.code == 200) {
+                if (data.results.compiled) {
+                    $("#success").show();
+                    $("#results").html(data.results.stdout);
+                } else {
+                    $("#fail").show();
+                    let errorMessage = "";
+                    data.results.errorMessage.forEach(message => {
+                        errorMessage += message + "<br>";
+                    });
+                    $("#results").html(errorMessage);
+                }
+            } else {
+                $("#fail").show();
+                $("#success").hide();
+            }
+        });
+    }
+
+    //清空已经输入的代码
+    function clearCode() {
+        codeMirror.setValue(defaultCode);
+    }
+</script>
+</body>
+</html>
