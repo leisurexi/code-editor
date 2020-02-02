@@ -4,6 +4,15 @@
 通过把字符串代码保存在 `.java` 文件中，然后通过 `JavaCompiler`
 去动态编译生成 `.class` 文件，然后通过自定义类加载器 `FileClassLoader` 
 去加载生成的类，最后通过反射调用 `main` 方法拦截 **控制台输出信息** 返回给前段页面。
+可以使用以下包中的 `api` :
+* import java.io.*
+* import java.lang.*
+* import java.math.*
+* import java.net.*
+* import java.nio.*
+* import java.text.*
+* import java.time.*
+* import java.util.*
 # 运行结果展示
 ## 成功结果展示
 ![FCF15D00-84D1-4095-A66D-E9ED4197AE5A.png](http://ww1.sinaimg.cn/large/006Vpl27ly1gbi601k02pj31k018w41r.jpg)
